@@ -1,0 +1,47 @@
+
+  CREATE OR REPLACE EDITIONABLE VIEW app_grip_read."U_REC_DISTR_ACC_YEAR" ("ULT_DATE", "ACCOUNTING_YEAR_START", "ACCOUNTING_YEAR_END", "ACC_YEAR", "PORIK", "POR", "PORNAME", "SECIK", "ISIN", "SECNAME", "WRAPPER", "CONTRACT_TYPE", "CUR", "DIS", "REB", "NET", "DISKOM", "NET2") AS select y.ult_date, y.accounting_year_start, y.accounting_year_end, y.acc_year
+     , y.porik, y.por, y.porname, y.secik, y.isin, y.secname, y.wrapper, y.contract_type, y.cur
+     , y.dis
+     , greatest(least(y.dis, y.reb+nvl(z.diskom_cur,0)),0) reb  -- greatest with 0 is there to catch negative net rebates (negative distribution, because of negative holding)
+     , greatest(y.net-nvl(z.diskom_cur,0),0)    net  -- added check on nonegatives [JARP 21-03-2019]
+     , nvl(z.diskom_cur,0) diskom_cur
+     , greatest(y.net2-nvl(z.diskom_cur,0),0)   net2 -- added check on nonegatives [JARP 21-03-2019]
+from ( select max(x.ult_date) ult_date,
+              add_months(last_day(to_date(x.acc_year||x.acc_month, 'yyyymm')),-12) + 1 accounting_year_start,
+                         last_day(to_date(x.acc_year||x.acc_month, 'yyyymm'))          accounting_year_end,           
+              x.acc_year,
+              x.porik,
+              x.por,
+              x.porname,
+              x.secik,
+              x.isin,
+              x.secname,
+              x.wrapper,
+              x.contract_type,
+              x.cur,
+              sum(nvl(x.dis_cur,0))                             dis,
+              sum(greatest(nvl(x.reb_dis_cur,0),0))             reb,
+              sum(nvl(x.net_dis_cur_nonegatives,0)) net,
+              sum(decode(sign(x.reb_dis_cur),-1,nvl(x.net_dis_cur,0),nvl(x.net_dis_cur_nonegatives,0))) net2
+       from app_grip_read.u_rec_distr   x
+       group by acc_year,
+                porik,
+                por,
+                porname,
+                secik,
+                isin,
+                secname,
+                wrapper,
+                contract_type,
+                add_months(last_day(to_date(x.acc_year||x.acc_month, 'yyyymm')),-12) + 1,
+                last_day(to_date(x.acc_year||x.acc_month, 'yyyymm')),
+                cur
+) y
+left join app_grip_read.u_retro_reimb z on y.porik = z.porik and y.secik = z.secik and y.acc_year = z.yyyy;
+
+
+  GRANT SELECT ON "U_REC_DISTR_ACC_YEAR" TO "D022717";
+  GRANT SELECT ON "U_REC_DISTR_ACC_YEAR" TO "APP_GRIP_READONLY";
+  GRANT SELECT ON "U_REC_DISTR_ACC_YEAR" TO "APP_EOY";
+  GRANT SELECT ON "U_REC_DISTR_ACC_YEAR" TO "APP_CR";
+  GRANT SELECT ON "U_REC_DISTR_ACC_YEAR" TO "D020738";

@@ -1,0 +1,41 @@
+
+  CREATE OR REPLACE EDITIONABLE VIEW app_cr."COST_DISTRIBUTION_FEE_V" ("ULT_DATE", "ACCOUNTING_YEAR_START", "ACCOUNTING_YEAR_END", "ACC_YEAR", "PORIK", "POR", "SECIK", "ISIN", "DIS", "REB", "NET") AS select max(ult_date) ult_date,
+       add_months(last_day(to_date(acc_year||acc_month, 'yyyymm')),-12) + 1 accounting_year_start,
+                  last_day(to_date(acc_year||acc_month, 'yyyymm'))          accounting_year_end,           
+       acc_year,
+       porik,
+       por,
+       secik,
+       isin,
+       sum(nvl(dis_cur,0))                           dis,
+       least(sum(nvl(reb_cur,0)),sum(nvl(dis_cur,0))) reb,
+       greatest(sum(nvl(dis_cur,0))  - sum(nvl(reb_cur,0)),0) net
+from app_grip_read.u_rec_distr
+where wrapper in ('FI CLIENT','FI FUND')
+group by 
+       acc_year,
+       yq,
+       porik,
+       por,
+       secik,
+       isin,
+       add_months(last_day(to_date(acc_year||acc_month, 'yyyymm')),-12) + 1,
+                  last_day(to_date(acc_year||acc_month, 'yyyymm'))
+       
+union all
+
+/* DEVS-613: Other portfolios are aggregated yearly - and data are fetched from a different view*/
+select ult_date,
+       accounting_year_start,
+       accounting_year_end,           
+       acc_year,
+       porik,
+       por,
+       secik,
+       isin,
+       dis,
+       reb,
+       net
+from APP_GRIP_READ.U_REC_DISTR_ACC_YEAR       
+where wrapper not in ('FI CLIENT','FI FUND');
+
