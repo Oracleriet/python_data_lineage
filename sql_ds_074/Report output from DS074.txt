@@ -1,0 +1,36 @@
+      create  or replace view DS074_OUTPUT as
+      SELECT greatest(MIN(accounting_year_start), TO_DATE('01-01-2018', 'DD-MM-YYYY')) fromdate, -- fromdate is the accounting year's start, but never earlier than 1-1-2018 (DEVS-582)
+             /*in_todate*/ to_date('31-12-2023','DD-MM-YYYY') todate,
+             por portfolio,
+             SUM(dis) paid_dist_fee,
+             SUM(reb) returned_dist_fee,
+             SUM(net) net_dist_fee
+        /*case when round(sum(dis) - sum(reb),2) = 0 then 0 
+             else  sum(net)
+        end Net_dist_fee*/
+        FROM (
+                SELECT accounting_year_start,
+                       por,
+                       dis,
+                       reb,
+                       net
+                  FROM app_cr.cost_distribution_fee_v
+                 WHERE 1 = 1
+                   AND por = :in_portfolio
+                   -- within the right accounting year
+                   AND accounting_year_start <= /*in_todate*/ to_date('31-12-2023','DD-MM-YYYY')
+                   AND /*in_todate*/ to_date('31-12-2023','DD-MM-YYYY') <= accounting_year_end
+                   -- never before 31-12-2017 (DEVS-582)
+                   AND TO_DATE('31-12-2017', 'DD-MM-YYYY') < ult_date
+                   -- excluding costs after the todate 
+                   AND /*in_todate*/ to_date('31-12-2023','DD-MM-YYYY') >= ult_date
+                -- adding zero-line to make sure every portfolio will have en output  
+                UNION ALL
+                SELECT NULL accounting_year_start,
+                       :in_portfolio por,
+                       0 dis,
+                       0 reb,
+                       0 net
+                  FROM dual
+             )
+       GROUP BY por;

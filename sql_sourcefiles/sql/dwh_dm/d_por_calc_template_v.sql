@@ -1,0 +1,35 @@
+
+  CREATE OR REPLACE EDITIONABLE VIEW dwh_dm."D_POR_CALC_TEMPLATE_V" ("D_POR_CALC_TEMPLATE_ID", "POR_CALC_TEMPLATE", "POR_CALC_TEMPLATE_IK", "POR_CALC_TEMPLATE_NAME", "DWH_CREATED_DATE", "DWH_CREATED_BY", "DWH_CHANGED_DATE", "DWH_CHANGED_BY", "TRANSACTION_DATE", "POR_CALC_RANK") AS select porcalctemplate.d_por_calc_template_id,
+       porcalctemplate.por_calc_template,
+       porcalctemplate.por_calc_template_ik,
+       porcalctemplate.por_calc_template_name,
+       porcalctemplate.dwh_created_date,
+       porcalctemplate.dwh_created_by,
+       porcalctemplate.dwh_changed_date,
+       porcalctemplate.dwh_changed_by,
+       porcalctemplate.transaction_date,
+       porcalctemplate.por_calc_rank
+from d_por_calc_template porcalctemplate
+where 1=1;
+
+   COMMENT ON COLUMN "D_POR_CALC_TEMPLATE_V"."D_POR_CALC_TEMPLATE_ID" IS 'Primary key on the table D_POR_CALC_TEMPLATE (sequence generated surogate key)';
+   COMMENT ON COLUMN "D_POR_CALC_TEMPLATE_V"."POR_CALC_TEMPLATE_IK" IS 'Original portfolio calculation';
+   COMMENT ON COLUMN "D_POR_CALC_TEMPLATE_V"."DWH_CREATED_DATE" IS 'Trigger generated creation date';
+   COMMENT ON COLUMN "D_POR_CALC_TEMPLATE_V"."DWH_CHANGED_DATE" IS 'Trigger generated changed date';
+
+
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "DWH_DM_READ";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_EOY" WITH GRANT OPTION;
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "D007840";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_DR";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "ODI_CONNECT";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_EOY" WITH GRANT OPTION;
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_DS";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "QUOV";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "INT_REPORTING";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_DIMA" WITH GRANT OPTION;
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_SAS";
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_AUTHORITY" WITH GRANT OPTION;
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_GRIP" WITH GRANT OPTION;
+  GRANT SELECT ON "D_POR_CALC_TEMPLATE_V" TO "APP_CR" WITH GRANT OPTION;
+  GRANT READ ON "D_POR_CALC_TEMPLATE_V" TO "APP_WAAM";
