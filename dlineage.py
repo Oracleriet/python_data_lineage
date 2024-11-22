@@ -72,7 +72,7 @@ def call_dataFlowAnalyzer(args):
                 return
 
             character_count = get_file_character_count(args[indexOf(args, "/f") + 1])
-            if character_count > 10000:
+            if character_count > 100000:
                 print("SQLFlow lite version only supports processing SQL statements with a maximum of 10,"
                       "000 characters. If you need to process SQL statements without length restrictions, "
                       "please contact support@gudusoft.com for more information.")
@@ -84,7 +84,7 @@ def call_dataFlowAnalyzer(args):
                 print(args[indexOf(args, "/d") + 1] + " is not a valid directory.")
                 return
             character_count = get_text_files_character_count(args[indexOf(args, "/d") + 1])
-            if character_count > 10000:
+            if character_count > 100000:
                 print("SQLFlow lite version only supports processing SQL statements with a maximum of 10,"
                       "000 characters. If you need to process SQL statements without length restrictions, "
                       "please contact support@gudusoft.com for more information.")

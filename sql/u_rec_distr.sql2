@@ -36,7 +36,8 @@
  --       ,NET_DIS_EUR_NONEGATIVES_QE*PAID_TO_DB               NET_DIS_EUR_NONEGATIVES_QE
         ,PAID_TO_DB
 from (
-select au.porik, au.mpik, au.fund_secik secik, au.ym
+select au.porik
+, au.mpik, au.fund_secik secik, au.ym
      , decode( po.portfolio_wrapper
              , 'FI CLIENT', decode( nvl(flf.value_pc,0)+nvl(flc.value_pc,0)
                                   , 0, au.ym
